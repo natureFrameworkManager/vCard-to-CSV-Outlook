@@ -1,0 +1,118 @@
+
+@font-face {
+    font-family: "Montserrat";
+    font-display: swap;
+    src: url(./Montserrat.woff2) format("woff2");
+}
+* {
+    margin: 0px;
+    padding: 0px;
+}
+html {
+    height: 100vh;
+}
+body {
+    background-color: #000D1A;
+    color: white;
+    font-size: 14px;
+    line-height: normal;
+    font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    margin: 24px 12px;
+
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    justify-items: center;
+    margin-bottom: 2rem;
+}
+header div.right {
+    display: flex;
+    justify-items: center;
+    column-gap: 4rem;
+}
+header div.vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+header div.right img {
+    width: 200px;
+}
+header img#git-logo {
+    width: 50px;
+}
+header h1 {
+    font-size: 32px;
+    line-height: normal;
+}
+header h2 {
+    font-size: 24px;
+    line-height: normal;
+}
+
+#eingabe-div {
+    /* background-color: #9F2A6E; */
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 8px;
+}
+
+#eingabe-div label {
+    background-color: #017C92;
+    border-radius: 8px;
+    font-size: 18px;
+    padding: 4px 12px;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    line-height: normal;
+    font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+#eingabe-div input {
+    display: none;
+}
+#eingabe-div button {
+    background-color: #FDEE00;
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 4px 12px;
+    line-height: normal;
+    font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+#eingabe-div #download-button {
+    background-color: #EFA78C;
+    color: black;
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 4px 12px;
+    text-decoration: none;
+    line-height: normal;
+    font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#textarea-div  {
+    display: flex;
+    column-gap: 8px;
+    height: 100%;
+}
+
+textarea {
+    height: 100%;
+    width: 100%;
+    font-size: 12px;
+    padding: 4px;
+    resize: none;
+}
+
+.hidden {
+    display: none;
+}

@@ -31,6 +31,7 @@ function on_drop(e) {
 
     fReader.onload = function () {
         textarea1.value = fReader.result;
+        ausfuehren();
     }
 }
 
@@ -47,6 +48,7 @@ function on_change_F(e) {
 
     fReader.onload = function () {
         textarea1.value = fReader.result;
+        ausfuehren();
     }
 }
 
@@ -210,6 +212,18 @@ function ausfuehren() {
         tempStr = '';
         obj = {};
 
+        createDownload(textarea2.value);
         downloadButton.classList.remove("hidden")
     }
+}
+
+function createDownload(text) {
+    var date = new Date();
+    var options = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    };
+    downloadButton.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    downloadButton.setAttribute('download', "adressbuch_"+(date.toLocaleDateString("de-DE", options).replaceAll(".", "-"))+".csv");
 }

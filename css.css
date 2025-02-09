@@ -78,7 +78,9 @@ header h2 {
     font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 #eingabe-div input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
 }
 #eingabe-div button {
     background-color: #FDEE00;
@@ -99,13 +101,29 @@ header h2 {
     font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+#error-div  {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    margin-bottom: 8px;
+}
+#error-div label {
+    font-size: 14px;
+}
+#error-div textarea {
+    width: 100%;
+    font-size: 12px;
+    padding: 2px;
+    resize: vertical;
+}
+
 #textarea-div  {
     display: flex;
     column-gap: 8px;
     height: 100%;
 }
 
-textarea {
+#textarea-div textarea {
     height: 100%;
     width: 100%;
     font-size: 12px;
@@ -114,5 +132,5 @@ textarea {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }

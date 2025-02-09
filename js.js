@@ -3,6 +3,7 @@ var start_button1 = document.querySelector("#start_button");
 var downloadButton = document.querySelector("#download-button");
 var textarea1 = document.querySelector("#textarea1");
 var textarea2 = document.querySelector("#textarea2");
+var textareaError = document.querySelector("#textarea-error");
 var file1 = document.querySelector("#file_input");
 
 // Events
@@ -59,161 +60,204 @@ function on_keydown(e) {
     }
 }
 
+function splitVCF(vcf) {
+    var returnData = [];
+    var contacts = vcf.split(/END:VCARD(\r\n|\n|\r)/);
+    contacts = contacts.map(el => el.split(/(\r\n|\n|\r)(?=.*:)/).map(line => line.split(/:(?!\/\/)/).map(elements => elements.split(";"))));
+    for (const contact of contacts) {
+        var contactObj = {"First Name": "","Middle Name": "","Last Name": "","Title": "","Suffix": "","Web Page": "","Birthday": "","Anniversary": "","Notes": "","E-mail Address": "","E-mail 2 Address": "","E-mail 3 Address": "","Primary Phone": "","Home Phone": "","Home Phone 2": "","Mobile Phone": "","Pager": "","Home Fax": "","Home Address": "","Home Street": "","Home Street 2": "","Home Street 3": "","Home Address PO Box": "","Home City": "","Home State": "","Home Postal Code": "","Home Country": "","Spouse": "","Children": "","Manager's Name": "","Assistant's Name": "","Referred By": "","Company Main Phone": "","Business Phone": "","Business Phone 2": "","Business Fax": "","Assistant's Phone": "","Company": "","Job Title": "","Department": "","Business Address": "","Business Street": "","Business Street 2": "","Business Street 3": "","Business Address PO Box": "","Business City": "","Business State": "","Business Postal Code": "","Business Country": "","Other Phone": "","Other Fax": "","Other Address": "","Other Street": "","Other Street 2": "","Other Street 3": "","Other Address PO Box": "","Other City": "","Other State": "","Other Postal Code": "","Other Country": "","Callback": "","Car Phone": "","ISDN": "","Radio Phone": "","TTY/TDD Phone": "","Telex": "","Categories": ""};
+        var fn = "";
+        for (const line of contact) {
+            if (line.length == 1) {
+                continue;
+            }
+            if (line[0][0].match(/\./)) {
+                var identifier = line[0][0].split(/\./)[0];
+                line[0][0] = line[0][0].split(/\./)[1];
+            }
+            line[1] = line[1].map(el => el.replace(/(\r\n|\n|\r)/, ""));
+            switch (line[0][0]) {
+                case "FN":
+                    fn = line[1][0]
+                    if (contactObj["First Name"] == "") {
+                        contactObj["First Name"] = line[1][0];
+                    }
+                    break;
+                case "N":
+                    contactObj["First Name"] = line[1][1];
+                    contactObj["Middle Name"] = line[1][2];
+                    contactObj["Last Name"] = line[1][0];
+                    contactObj["Title"] = line[1][3];
+                    contactObj["Suffix"] = line[1][4];
+                    break;
+                case "EMAIL":
+                    if (contactObj["E-mail Address"] == "") {
+                        contactObj["E-mail Address"] = line[1][0];
+                    } else if (contactObj["E-mail 2 Address"] == "") {
+                        contactObj["E-mail 2 Address"] = line[1][0];
+                    } else if (contactObj["E-mail 3 Address"] == "") {
+                        contactObj["E-mail 3 Address"] = line[1][0];
+                    } else {
+                        textareaError.value += "Es sind mehr als 3 E-Mail-Addressen nicht durch das CSV-Format unterstützt: " + line[1][0] + (fn != "" ? (" (" + fn + ")") : "") + "\r\n";
+                    }
+                    break;
+                case "TEL":
+                    if (line[0].length > 1 && line[0][1].match(/TYPE/)) {
+                        switch (line[0][1].split("=")[1].toLowerCase()) {
+                            case "home":
+                                var key = "Home Phone";
+                                break;
+                            case "home2":
+                                var key = "Home Phone 2";
+                                break;
+                            case "main":
+                                var key = "Primary Phone";
+                                break;
+                            case "mobile":
+                            case "cell":
+                                var key = "Mobile Phone";
+                                break;
+                            case "pager":
+                                var key = "Pager";
+                                break;
+                            case "home fax":
+                                var key = "Home Fax";
+                                break;
+                            case "work":
+                                var key = "Business Phone";
+                                break;
+                            case "work2":
+                                var key = "Business Phone 2";
+                                break;
+                            case "workfax":
+                                var key = "Business Fax";
+                                break;
+                            case "assistant":
+                                var key = "Assistant's Phone";
+                                break;
+                            case "car":
+                                var key = "Car Phone";
+                                break;
+                            case "car":
+                                var key = "Other Phone";
+                                break;
+                            default:
+                                var key = "Other Phone";
+                                break;
+                        }
+                    } else {
+                        var key = "Other Phone";
+                    }
+                    if (contactObj[key] !== "") {
+                        textareaError.value += "Es sind mehrere Telefonnummern mit dem gleichen Label (" + key + ") nicht durch das Outlook-CSV-Format unterstützt: " + line[1][0] + (fn != "" ? (" (" + fn + ")") : "") + "\r\n";
+                    } else {
+                        contactObj[key] = line[1][0];
+                    }
+                    break;
+                case "ADR":
+                    if (line[0].length > 1 && line[0][1].match(/TYPE/)) {
+                        switch (line[0][1].split("=")[1].toLowerCase()) {
+                            case "home":
+                                var prefix = "Home ";
+                                break;
+                            case "work":
+                                var prefix = "Business ";
+                                break;
+                            case "other":
+                                var prefix = "Other ";
+                                break;
+                            default:
+                                var prefix = "Home ";
+                                break;
+                        }
+                    } else {
+                        var prefix = "Other ";
+                    }
+                    contactObj[prefix + "Street"] = line[1][2];
+                    contactObj[prefix + "Street 2"] = line[1][1];
+                    contactObj[prefix + "Address PO Box"] = line[1][0];
+                    contactObj[prefix + "City"] = line[1][3];
+                    contactObj[prefix + "State"] = line[1][4];
+                    contactObj[prefix + "Postal Code"] = line[1][5];
+                    contactObj[prefix + "Country"] = line[1][6];
+                    break;
+                case "BDAY":
+                    contactObj["Birthday"] = line[1][0];
+                    break;
+                case "X-ANNIVERSARY":
+                case "ANNIVERSARY":
+                    contactObj["Anniversary"] = line[1][0];
+                    break;
+                case "URL":
+                    contactObj["Web Page"] = line[1][0];
+                    break;
+                case "NOTE":
+                    contactObj["Notes"] = line[1][0];
+                    break;
+                case "X-SPOUSE":
+                    contactObj["Spouse"] = line[1][0];
+                    break;
+                case "X-MANAGER":
+                    contactObj["Manager's Name"] = line[1][0];
+                    break;
+                case "AGENT":
+                    contactObj["Assistant's Name"] = line[1][0];
+                    break;
+                case "TITLE":
+                    contactObj["Job Title"] = line[1][0];
+                    break;
+                case "ORG":
+                    contactObj["Company"] = line[1][0];
+                    break;
+                case "X-DEPARTMENT":
+                    contactObj["Department"] = line[1][0];
+                    break;
+                case "CATEGORIES":
+                    contactObj["Categories"] = line[1][0];
+                    break;
+                case "BEGIN":
+                case "VERSION":
+                    break;
+            }
+        }
+        if (new Set(Object.values(contactObj)).size > 1) {
+            returnData.push(contactObj);
+            console.log(contactObj);
+            console.log("----")
+        }
+    }
+    return returnData;
+}
+
+function createCSV(contactsData) {
+    var result = "";
+    var keys = ["First Name","Middle Name","Last Name","Title","Suffix","Web Page","Birthday","Anniversary","Notes","E-mail Address","E-mail 2 Address","E-mail 3 Address","Primary Phone","Home Phone","Home Phone 2","Mobile Phone","Pager","Home Fax","Home Address","Home Street","Home Street 2","Home Street 3","Home Address PO Box","Home City","Home State","Home Postal Code","Home Country","Spouse","Children","Manager's Name","Assistant's Name","Referred By","Company Main Phone","Business Phone","Business Phone 2","Business Fax","Assistant's Phone","Company","Job Title","Department","Business Address","Business Street","Business Street 2","Business Street 3","Business Address PO Box","Business City","Business State","Business Postal Code","Business Country","Other Phone","Other Fax","Other Address","Other Street","Other Street 2","Other Street 3","Other Address PO Box","Other City","Other State","Other Postal Code","Other Country","Callback","Car Phone","ISDN","Radio Phone","TTY/TDD Phone","Telex","Categories"];
+    result += keys.join(",") + "\r\n";
+    for (const contact of contactsData) {
+        for (const key of keys) {
+            result += contact[key].replaceAll(",", ";") + ",";
+        }
+        result += "\r\n";
+    }
+    return result;
+}
 
 // Parser
 function ausfuehren() {
-    var temp;
-    temp = textarea1.value;
-
-    // Alles unnötige Rausputzen! :)))
-    temp = temp.replace(/;/gim, '');
-    temp = temp.replace(/CHARSET=.*:/gim, ':');
-    // Hier nur erste Zeile von Photo weg :(
-    temp = temp.replace(/^PHOTO.*/gim, '');
-    // Macht die restlichen Photo-Daten weg! :)))
-    temp = temp.replace(/^ .*\n/gim, '');
-
-    // Decode CHARSET=
-    // Wenn match nichts findet gibt null zurück!
-    var arr = temp.match(/(=..=.*=..$|%..%.*%..$)/gim);
-
-    if (arr !== null) {
-        // Hier werden einfach '=' durch '%' ersetzt! ;)
-        for (var x = 0; x < arr.length; x++) {
-            arr[x] = arr[x].replace(/={1}/g, '%');
-        }
-        // Hier wird decodiert
-        for (var x = 0; x < arr.length; x++) {
-            arr[x] = decodeURI(arr[x]);
-        }
-
-        // Alle decodierten Werte Ersetzen im ganzen Text
-        for (var x = 0; x < arr.length; x++) {
-            temp = temp.replace(/(=..=.*=..$|%..%.*%..$)/m, arr[x]);
-        }
-
-    }
-
-    // Alles in ein Array-Array Packen
-    temp = temp.split('\n');
-
-    var index = 0;
-    var x = 0;
-    var arr_str = [];
-    var arr_str_i = [];
-    try {
-        while (true) {
-
-            arr_str_i[x] = temp.shift();
-
-            if (arr_str_i[x].match(/^END:VCARD/i)) {
-                arr_str[index] = arr_str_i;
-                index++;
-                x = 0;
-                arr_str_i = [];
-                continue;
-            }
-            x++;
-        }
-    } catch { };
-
-    //Ausgabe-Array-CSV
-    var ausgabeArr = [];
-    var spaltenNamen = [];
-    var temp = '';
-    var index = 0;
-    for (var x = 0; x < arr_str.length; x++) {
-        temp = arr_str[x]
-        for (var i = 0; i < temp.length; i++) {
-            spaltenNamen[i] = temp[i].split(':');
-        }
-        ausgabeArr[index] = spaltenNamen;
-        spaltenNamen = [];
-        index++;
-    }
-
-    // Ausgabe:
-    var strSpalten = '';
-    for (var x = 0; x < ausgabeArr.length; x++) {
-        // Spalten
-        for (var i = 0; i < ausgabeArr[x].length; i++) {
-
-            // Filter
-            if (filter(strSpalten, ausgabeArr, x, i))
-                continue;
-
-            strSpalten += ausgabeArr[x][i][0] + ';';
-        }
-    }
-    function filter(strSpalten, ausgabeArr, x, i) {
-        var str = '';
-
-        // Grober Filter
-        // Folgendes Rauswerfen
-        str = ausgabeArr[x][i][0];
-
-        if (str.match(/VERSION/i))
-            return true;
-        if (str.match(/BEGIN/i))
-            return true;
-        if (str.match(/END/i))
-            return true;
-
-        // Muss sein sonst wird N in FN gefunden und nicht aufgenommen! :()
-        if (strSpalten) {
-            var spaltenWerte = strSpalten.split(';');
-            for (var x = 0; x < spaltenWerte.length; x++) {
-                if (spaltenWerte[x] === str)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-
-    // Finale!
-
-    // Enthält die Kopf Zeilen
-    // strSpalten;
-
-    // Wird nur die Werte enthalten 
-    var arrEntgueltig = [];
-
-    // Ausgabe Objekt
-    var obj = {};
-
-    var tempStr = '';
-    for (var x = 0; x < ausgabeArr.length; x++) {
-        for (var i = 0; i < ausgabeArr[x].length; i++) {
-            // key value
-            obj[ausgabeArr[x][i][0]] = ausgabeArr[x][i][1];
-        }
-
-        var spaltenWerte = strSpalten.split(';');
-        for (var y = 0; y < spaltenWerte.length; y++) {
-            tempStr += obj[spaltenWerte[y]] + ';';
-        }
-
-        // Hier wird abgefüllt!!
-        tempStr = tempStr.replace(/undefined/g, '');
-        arrEntgueltig[x] = tempStr;
-
-        // Ausgabe aufs Textfeld
-        // Stellt Autokorrektur zurück(Rote Wellenlinien)
-        textarea2.value = '';
-
-        // Kopfzeile
-        textarea2.value = strSpalten + '\n';
-
-        // Werte(Zeilen)
-        for (var y = 0; y < arrEntgueltig.length; y++) {
-            textarea2.value += arrEntgueltig[y] + '\n';
-        }
-        tempStr = '';
-        obj = {};
-
+    if (textarea1.value == "") {
+        downloadButton.classList.add("hidden");
+        document.querySelector("#error-div").classList.add("hidden");
+    } else {
+        textareaError.value = "";
+        var contactsData = splitVCF(textarea1.value);
+        textarea2.value = createCSV(contactsData);
+    
         createDownload(textarea2.value);
         downloadButton.classList.remove("hidden")
+
+        if (textareaError.value != "") {
+            document.querySelector("#error-div").classList.remove("hidden");
+        }
     }
 }
 

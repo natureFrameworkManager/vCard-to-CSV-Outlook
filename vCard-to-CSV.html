@@ -8,6 +8,7 @@
 
         <title>Adressbuch-Konverter - IT-Administration EvaSchulze</title>
 
+        <script src="https://cdn.jsdelivr.net/gh/kpym/windows1252-light@v1.1.0/windows1252.js" defer></script>
         <link rel="stylesheet" href="css.css">
     </head>
     <body>
@@ -25,7 +26,8 @@
             <label for="file_input">.vcf Datei auswählen</label>
             <input type="file" id="file_input" accept=".vcf">
             <button id="start_button">Umwandlen</button>
-            <a id="download-button" class="hidden" href="">Download als .csv</a>
+            <a class="download-button hidden" id="download-button" href="">Download als .csv (Lehrkräfte - UTF-8)</a>
+            <a class="download-button hidden" id="download-1252-button" href="">Download als .csv (Verwaltung - Windows-1252)</a>
         </div>
         <div id="error-div" class="hidden">
             <label for="textarea-error">Aufgetretene Fehler beim Konvertieren</label>

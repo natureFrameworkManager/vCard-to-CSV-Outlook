@@ -1,6 +1,7 @@
 // Elements
 var start_button1 = document.querySelector("#start_button");
 var downloadButton = document.querySelector("#download-button");
+var download1252Button = document.querySelector("#download-1252-button");
 var textarea1 = document.querySelector("#textarea1");
 var textarea2 = document.querySelector("#textarea2");
 var textareaError = document.querySelector("#textarea-error");
@@ -15,6 +16,7 @@ textarea1.addEventListener("input", on_change_T, false);
 function on_change_T(e) {
     if (e.target.value == "") {
         downloadButton.classList.add("hidden");
+        download1252Button.classList.add("hidden");
         textarea2.value = "";
     }
 }
@@ -258,6 +260,7 @@ function createCSV(contactsData) {
 function ausfuehren() {
     if (textarea1.value == "") {
         downloadButton.classList.add("hidden");
+        download1252Button.classList.add("hidden");
         document.querySelector("#error-div").classList.add("hidden");
     } else {
         textareaError.value = "";
@@ -266,12 +269,29 @@ function ausfuehren() {
     
         // Replace all Line-Breaks to comply with Windows CRLF
         createDownload(createCSV(contactsData).replaceAll(/\r?\n/g, "\r\n"));
+        create1252Download(createCSV(contactsData).replaceAll(/\r?\n/g, "\r\n"));
         downloadButton.classList.remove("hidden")
+        download1252Button.classList.remove("hidden")
 
         if (textareaError.value != "") {
             document.querySelector("#error-div").classList.remove("hidden");
         }
     }
+}
+
+function create1252Download(text) {
+    var csvContentEncoded = UnicodeToWindows1252(text);
+    var blob = new Blob([csvContentEncoded], {type: 'text/csv;charset=windows-1252;'});
+    var url = URL.createObjectURL(blob);
+
+    var date = new Date();
+    var options = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    };
+    download1252Button.setAttribute('href', url);
+    download1252Button.setAttribute('download', "adressbuch_"+(date.toLocaleDateString("de-DE", options).replaceAll(".", "-"))+".csv");
 }
 
 function createDownload(text) {

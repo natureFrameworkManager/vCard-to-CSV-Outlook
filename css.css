@@ -90,7 +90,7 @@ header h2 {
     line-height: normal;
     font-family: "Montserrat", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
-#eingabe-div #download-button {
+#eingabe-div .download-button {
     background-color: #EFA78C;
     color: black;
     border-radius: 8px;

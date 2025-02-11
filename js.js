@@ -65,7 +65,7 @@ function splitVCF(vcf) {
     var contacts = vcf.split(/END:VCARD(\r\n|\n|\r)/);
     contacts = contacts.map(el => el.split(/(\r\n|\n|\r)(?=.*:)/).map(line => line.split(/:(?!\/\/)/).map(elements => elements.split(";"))));
     for (const contact of contacts) {
-        var contactObj = {"First Name": "","Middle Name": "","Last Name": "","Title": "","Suffix": "","Web Page": "","Birthday": "","Anniversary": "","Notes": "","E-mail Address": "","E-mail 2 Address": "","E-mail 3 Address": "","Primary Phone": "","Home Phone": "","Home Phone 2": "","Mobile Phone": "","Pager": "","Home Fax": "","Home Address": "","Home Street": "","Home Street 2": "","Home Street 3": "","Home Address PO Box": "","Home City": "","Home State": "","Home Postal Code": "","Home Country": "","Spouse": "","Children": "","Manager's Name": "","Assistant's Name": "","Referred By": "","Company Main Phone": "","Business Phone": "","Business Phone 2": "","Business Fax": "","Assistant's Phone": "","Company": "","Job Title": "","Department": "","Business Address": "","Business Street": "","Business Street 2": "","Business Street 3": "","Business Address PO Box": "","Business City": "","Business State": "","Business Postal Code": "","Business Country": "","Other Phone": "","Other Fax": "","Other Address": "","Other Street": "","Other Street 2": "","Other Street 3": "","Other Address PO Box": "","Other City": "","Other State": "","Other Postal Code": "","Other Country": "","Callback": "","Car Phone": "","ISDN": "","Radio Phone": "","TTY/TDD Phone": "","Telex": "","Categories": ""};
+        var contactObj = {'Anrede':'','Vorname':'','Weitere Vornamen':'','Nachname':'','Suffix':'','Firma':'','Abteilung':'','Position':'','Straße geschäftlich':'','Straße geschäftlich 2':'','Straße geschäftlich 3':'','Ort geschäftlich':'','Region geschäftlich':'','Postleitzahl geschäftlich':'','Land/Region geschäftlich':'','Straße privat':'','Straße privat 2':'','Straße privat 3':'','Ort privat':'','Bundesland/Kanton privat':'','Postleitzahl privat':'','Land/Region privat':'','Weitere Straße':'','Weitere Straße 2':'','Weitere Straße 3':'','Weiterer Ort':'','Weiteres/r Bundesland/Kanton':'','Weitere Postleitzahl':'','Weiteres/e Land/Region':'','Telefon Assistent':'','Fax geschäftlich':'','Telefon geschäftlich':'','Telefon geschäftlich 2':'','Rückmeldung':'','Autotelefon':'','Telefon Firma':'','Fax privat':'','Telefon (privat)':'','Telefon (privat 2)':'','ISDN':'','Mobiltelefon':'','Weiteres Fax':'','Weiteres Telefon':'','Pager':'','Haupttelefon':'','Mobiltelefon 2':'','Telefon für Hörbehinderte':'','Telex':'','Abrechnungsinformation':'','Assistent(in)':'','Benutzer 1':'','Benutzer 2':'','Benutzer 3':'','Benutzer 4':'','Beruf':'','Büro':'','E-Mail-Adresse':'','E-Mail-Typ':'','E-Mail: Angezeigter Name':'','E-Mail 2: Adresse':'','E-Mail 2: Typ':'','E-Mail 2: Angezeigter Name':'','E-Mail 3: Adresse':'','E-Mail 3: Typ':'','E-Mail 3: Angezeigter Name':'','Empfohlen von':'','Geburtstag':'','Geschlecht':'','Hobby':'','Initialen':'','Internet Frei/Gebucht':'','Jahrestag':'','Kategorien':'','Kinder':'','Konto':'','Name des/r Vorgesetzten':'','Notizen':'','Organisationsnr.':'','Ort':'','Partner/in':'','Postfach geschäftlich':'','Postfach privat':'','Priorität':'','Privat':'','Reisekilometer':'','Sozialversicherungsnr.':'','Sprache':'','Stichwörter':'','Vertraulichkeit':'','Verzeichnisserver':'','Webseite':'','Weiteres Postfach':''};
         var fn = "";
         for (const line of contact) {
             if (line.length == 1) {
@@ -78,25 +78,25 @@ function splitVCF(vcf) {
             line[1] = line[1].map(el => el.replace(/(\r\n|\n|\r)/, ""));
             switch (line[0][0]) {
                 case "FN":
-                    fn = line[1][0]
-                    if (contactObj["First Name"] == "") {
-                        contactObj["First Name"] = line[1][0];
+                    fn = line[1][0];
+                    if (contactObj["Vorname"] == "") {
+                        contactObj["Vorname"] = line[1][0];
                     }
                     break;
                 case "N":
-                    contactObj["First Name"] = line[1][1];
-                    contactObj["Middle Name"] = line[1][2];
-                    contactObj["Last Name"] = line[1][0];
-                    contactObj["Title"] = line[1][3];
+                    contactObj["Vorname"] = line[1][1];
+                    contactObj["Weitere Vornamen"] = line[1][2];
+                    contactObj["Nachname"] = line[1][0];
+                    contactObj["Anrede"] = line[1][3];
                     contactObj["Suffix"] = line[1][4];
                     break;
                 case "EMAIL":
-                    if (contactObj["E-mail Address"] == "") {
-                        contactObj["E-mail Address"] = line[1][0];
-                    } else if (contactObj["E-mail 2 Address"] == "") {
-                        contactObj["E-mail 2 Address"] = line[1][0];
-                    } else if (contactObj["E-mail 3 Address"] == "") {
-                        contactObj["E-mail 3 Address"] = line[1][0];
+                    if (contactObj["E-Mail-Adresse"] == "") {
+                        contactObj["E-Mail-Adresse"] = line[1][0];
+                    } else if (contactObj["E-Mail 2: Adresse"] == "") {
+                        contactObj["E-Mail 2: Adresse"] = line[1][0];
+                    } else if (contactObj["E-Mail 3: Adresse"] == "") {
+                        contactObj["E-Mail 3: Adresse"] = line[1][0];
                     } else {
                         textareaError.value += "Es sind mehr als 3 E-Mail-Addressen nicht durch das CSV-Format unterstützt: " + line[1][0] + (fn != "" ? (" (" + fn + ")") : "") + "\r\n";
                     }
@@ -105,48 +105,48 @@ function splitVCF(vcf) {
                     if (line[0].length > 1 && line[0][1].match(/TYPE/)) {
                         switch (line[0][1].split("=")[1].toLowerCase()) {
                             case "home":
-                                var key = "Home Phone";
+                                var key = "Telefon (privat)";
                                 break;
                             case "home2":
-                                var key = "Home Phone 2";
+                                var key = "Telefon (privat 2)";
                                 break;
                             case "main":
-                                var key = "Primary Phone";
+                                var key = "Haupttelefon";
                                 break;
                             case "mobile":
                             case "cell":
-                                var key = "Mobile Phone";
+                                var key = "Mobiltelefon";
                                 break;
                             case "pager":
                                 var key = "Pager";
                                 break;
                             case "home fax":
-                                var key = "Home Fax";
+                                var key = "Fax privat";
                                 break;
                             case "work":
-                                var key = "Business Phone";
+                                var key = "Telefon geschäftlich";
                                 break;
                             case "work2":
-                                var key = "Business Phone 2";
+                                var key = "Telefon geschäftlich 2";
                                 break;
                             case "workfax":
-                                var key = "Business Fax";
+                                var key = "Fax geschäftlich";
                                 break;
                             case "assistant":
-                                var key = "Assistant's Phone";
+                                var key = "Telefon Assistent";
                                 break;
                             case "car":
-                                var key = "Car Phone";
+                                var key = "Autotelefon";
                                 break;
                             case "car":
-                                var key = "Other Phone";
+                                var key = "Weiteres Telefon";
                                 break;
                             default:
-                                var key = "Other Phone";
+                                var key = "Weiteres Telefon";
                                 break;
                         }
                     } else {
-                        var key = "Other Phone";
+                        var key = "Weiteres Telefon";
                     }
                     if (contactObj[key] !== "") {
                         textareaError.value += "Es sind mehrere Telefonnummern mit dem gleichen Label (" + key + ") nicht durch das Outlook-CSV-Format unterstützt: " + line[1][0] + (fn != "" ? (" (" + fn + ")") : "") + "\r\n";
@@ -158,62 +158,70 @@ function splitVCF(vcf) {
                     if (line[0].length > 1 && line[0][1].match(/TYPE/)) {
                         switch (line[0][1].split("=")[1].toLowerCase()) {
                             case "home":
-                                var prefix = "Home ";
+                                var prefix = "privat";
                                 break;
                             case "work":
-                                var prefix = "Business ";
+                                var prefix = "geschäftlich";
                                 break;
                             case "other":
-                                var prefix = "Other ";
+                                var prefix = "Weitere";
                                 break;
                             default:
-                                var prefix = "Home ";
+                                var prefix = "privat";
                                 break;
                         }
                     } else {
                         var prefix = "Other ";
                     }
-                    contactObj[prefix + "Street"] = line[1][2];
-                    contactObj[prefix + "Street 2"] = line[1][1];
-                    contactObj[prefix + "Address PO Box"] = line[1][0];
-                    contactObj[prefix + "City"] = line[1][3];
-                    contactObj[prefix + "State"] = line[1][4];
-                    contactObj[prefix + "Postal Code"] = line[1][5];
-                    contactObj[prefix + "Country"] = line[1][6];
+                    if (prefix != "Weitere") {
+                        contactObj["Straße " + prefix] = line[1][2];
+                        contactObj["Straße " + prefix + " 2"] = line[1][1];
+                        contactObj["Ort " + prefix] = line[1][3];
+                        contactObj["Bundesland/Kanton " + prefix] = line[1][4];
+                        contactObj["Postleitzahl " + prefix] = line[1][5];
+                        contactObj["Land/Region " + prefix] = line[1][6];
+                    } else {
+                        contactObj[prefix + " Straße"] = line[1][2];
+                        contactObj[prefix + " Straße 2"] = line[1][1];
+                        contactObj[prefix + "r Ort"] = line[1][3];
+                        contactObj[prefix + "s/r Bundesland/Kanton"] = line[1][4];
+                        contactObj[prefix + " Postleitzahl"] = line[1][5];
+                        contactObj[prefix + "s/e Land/Region"] = line[1][6];
+                    }
                     break;
                 case "BDAY":
-                    contactObj["Birthday"] = line[1][0];
+                    contactObj["Geburtstag"] = line[1][0];
                     break;
                 case "X-ANNIVERSARY":
                 case "ANNIVERSARY":
-                    contactObj["Anniversary"] = line[1][0];
+                    contactObj["Jahrestag"] = line[1][0];
                     break;
                 case "URL":
-                    contactObj["Web Page"] = line[1][0];
+                    contactObj["Webseite"] = line[1][0];
                     break;
                 case "NOTE":
-                    contactObj["Notes"] = line[1][0];
+                    contactObj["Notizen"] = line[1][0];
                     break;
                 case "X-SPOUSE":
-                    contactObj["Spouse"] = line[1][0];
+                    contactObj["Partner/in"] = line[1][0];
                     break;
                 case "X-MANAGER":
-                    contactObj["Manager's Name"] = line[1][0];
+                    contactObj["Name des/r Vorgesetzten"] = line[1][0];
                     break;
                 case "AGENT":
-                    contactObj["Assistant's Name"] = line[1][0];
+                    contactObj["Assistent(in)"] = line[1][0];
                     break;
                 case "TITLE":
-                    contactObj["Job Title"] = line[1][0];
+                    contactObj["Position"] = line[1][0];
                     break;
                 case "ORG":
-                    contactObj["Company"] = line[1][0];
+                    contactObj["Firma"] = line[1][0];
                     break;
                 case "X-DEPARTMENT":
-                    contactObj["Department"] = line[1][0];
+                    contactObj["Abteilung"] = line[1][0];
                     break;
                 case "CATEGORIES":
-                    contactObj["Categories"] = line[1][0];
+                    contactObj["Kategorien"] = line[1][0];
                     break;
                 case "BEGIN":
                 case "VERSION":
@@ -231,12 +239,16 @@ function splitVCF(vcf) {
 
 function createCSV(contactsData) {
     var result = "";
-    var keys = ["First Name","Middle Name","Last Name","Title","Suffix","Web Page","Birthday","Anniversary","Notes","E-mail Address","E-mail 2 Address","E-mail 3 Address","Primary Phone","Home Phone","Home Phone 2","Mobile Phone","Pager","Home Fax","Home Address","Home Street","Home Street 2","Home Street 3","Home Address PO Box","Home City","Home State","Home Postal Code","Home Country","Spouse","Children","Manager's Name","Assistant's Name","Referred By","Company Main Phone","Business Phone","Business Phone 2","Business Fax","Assistant's Phone","Company","Job Title","Department","Business Address","Business Street","Business Street 2","Business Street 3","Business Address PO Box","Business City","Business State","Business Postal Code","Business Country","Other Phone","Other Fax","Other Address","Other Street","Other Street 2","Other Street 3","Other Address PO Box","Other City","Other State","Other Postal Code","Other Country","Callback","Car Phone","ISDN","Radio Phone","TTY/TDD Phone","Telex","Categories"];
-    result += keys.join(",") + "\r\n";
+    var keys = ['Anrede','Vorname','Weitere Vornamen','Nachname','Suffix','Firma','Abteilung','Position','Straße geschäftlich','Straße geschäftlich 2','Straße geschäftlich 3','Ort geschäftlich','Region geschäftlich','Postleitzahl geschäftlich','Land/Region geschäftlich','Straße privat','Straße privat 2','Straße privat 3','Ort privat','Bundesland/Kanton privat','Postleitzahl privat','Land/Region privat','Weitere Straße','Weitere Straße 2','Weitere Straße 3','Weiterer Ort','Weiteres/r Bundesland/Kanton','Weitere Postleitzahl','Weiteres/e Land/Region','Telefon Assistent','Fax geschäftlich','Telefon geschäftlich','Telefon geschäftlich 2','Rückmeldung','Autotelefon','Telefon Firma','Fax privat','Telefon (privat)','Telefon (privat 2)','ISDN','Mobiltelefon','Weiteres Fax','Weiteres Telefon','Pager','Haupttelefon','Mobiltelefon 2','Telefon für Hörbehinderte','Telex','Abrechnungsinformation','Assistent(in)','Benutzer 1','Benutzer 2','Benutzer 3','Benutzer 4','Beruf','Büro','E-Mail-Adresse','E-Mail-Typ','E-Mail: Angezeigter Name','E-Mail 2: Adresse','E-Mail 2: Typ','E-Mail 2: Angezeigter Name','E-Mail 3: Adresse','E-Mail 3: Typ','E-Mail 3: Angezeigter Name','Empfohlen von','Geburtstag','Geschlecht','Hobby','Initialen','Internet Frei/Gebucht','Jahrestag','Kategorien','Kinder','Konto','Name des/r Vorgesetzten','Notizen','Organisationsnr.','Ort','Partner/in','Postfach geschäftlich','Postfach privat','Priorität','Privat','Reisekilometer','Sozialversicherungsnr.','Sprache','Stichwörter','Vertraulichkeit','Verzeichnisserver','Webseite','Weiteres Postfach'];
+    // Keys which are actually populated
+    // var keys = ['Anrede','Vorname','Weitere Vornamen','Nachname','Suffix','Firma','Abteilung','Position','Straße geschäftlich','Straße geschäftlich 2','Straße geschäftlich 3','Ort geschäftlich','Region geschäftlich','Postleitzahl geschäftlich','Land/Region geschäftlich','Straße privat','Straße privat 2','Straße privat 3','Ort privat','Bundesland/Kanton privat','Postleitzahl privat','Land/Region privat','Weitere Straße','Weitere Straße 2','Weitere Straße 3','Weiterer Ort','Weiteres/r Bundesland/Kanton','Weitere Postleitzahl','Weiteres/e Land/Region','Telefon Assistent','Fax geschäftlich','Telefon geschäftlich','Telefon geschäftlich 2','Autotelefon','Fax privat','Telefon (privat)','Telefon (privat 2)','Mobiltelefon','Weiteres Fax','Weiteres Telefon','Pager','Haupttelefon','Mobiltelefon 2','Assistent(in)','E-Mail-Adresse','E-Mail 2: Adresse','E-Mail 3: Adresse','Geburtstag','Jahrestag','Kategorien','Name des/r Vorgesetzten','Notizen','Partner/in','Webseite'];
+    result += '"' + keys.join('","') + '"\r\n';
     for (const contact of contactsData) {
         for (const key of keys) {
-            result += contact[key].replaceAll(",", ";") + ",";
+            result += '"' + contact[key].replaceAll(",", ";") + '",';
         }
+        // Remove redundant comma at end of line
+        result = result.slice(0, -1);
         result += "\r\n";
     }
     return result;

@@ -252,7 +252,8 @@ function ausfuehren() {
         var contactsData = splitVCF(textarea1.value);
         textarea2.value = createCSV(contactsData);
     
-        createDownload(textarea2.value);
+        // Replace all Line-Breaks to comply with Windows CRLF
+        createDownload(createCSV(contactsData).replaceAll(/\r?\n/g, "\r\n"));
         downloadButton.classList.remove("hidden")
 
         if (textareaError.value != "") {
